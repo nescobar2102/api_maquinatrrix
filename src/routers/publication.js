@@ -1,5 +1,4 @@
-const express = require("express"); 
-const jwt = require('jsonwebtoken');
+const express = require("express");  
 const authenticateToken = require('../middleware/auth');
 const router = express.Router();
 const PubControllers = require('../controllers/publication');
@@ -14,6 +13,7 @@ router.get('/list_publications_panel', async (req, res) => {
        if (result.rowCount > 0) {
           response.error = false;
           response.msg = 'Publicaciones encontradas';
+          response.count = result.rowCount;
           response.data = result.rows;
           status = 200;
        } else {
@@ -32,7 +32,8 @@ router.get('/list_publications_panel_details', async (req, res) => {
 
       if (result.rowCount > 0) {
          response.error = false;
-         response.msg = 'Publicaciones encontradas';
+         response.msg = 'Publicaciones detalles encontradas';
+         response.count = result.rowCount;
          response.data = result.rows;
          status = 200;
       } else {
@@ -55,8 +56,7 @@ router.post('/register_publication',authenticateToken, async (req, res) => {
        flag = true;
        response.msg = 'Campos vacíos';
     }
- 
-    // Realizar la inserción en la base de datos si no hay errores de validación
+  
     if (!flag) {
         result = await new PubControllers().registerPub(title,  id_publication_type, id_category, req.user.id_user) 
        
@@ -81,15 +81,22 @@ router.post('/register_publication',authenticateToken, async (req, res) => {
  
     const { id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery } = req.body;
  
-    // Validar los datos de entrada
-    if (id_product == null || price.trim() === '' || brand.trim() === '' || model.trim() === '' || year.trim() === '' || condition.trim() === '' || mileage.trim() === '' || engine_number.trim() === '' || warranty.trim() === '' || owner.trim() === '' || delivery.trim() === '' || pay_now_delivery.trim() === '') {
-       flag = true;
-       response.msg = 'Campos vacíos';
-    }
+    if (id_product == '' || price  === '' || brand == '' || model.trim() === '' || year === '' || condition.trim() === ''
+    || mileage  == '' || engine_number == '' || warranty.trim() === '' || owner.trim() === '' || delivery.trim() === '' || pay_now_delivery.trim() === '') {
+      flag = true;
+      response.msg = 'Campos vacíos';
+     }
   
     if (!flag) {
-        result = await new PubControllers().registerPubDetails(id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery);
-          
+      let result;
+         exist  = await new PubControllers().getPublicationsDetails(id_product);
+        
+         if (exist.rowCount == 0) {
+                result = await new PubControllers().registerPubDetails(id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery);
+             } else{
+                result = await new PubControllers().updatePublicationDetail(id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery);
+             }
+
           if (result.rowCount > 0) {
              response.error = false;
              response.msg = 'Detalle de la publicación registrado exitosamente';
@@ -129,9 +136,9 @@ router.post('/register_publication',authenticateToken, async (req, res) => {
    const response = newResponseJson();
    let status = 400;
 
-   const { location,description, id_product} = req.body; 
+   const { location,description,title, id_product} = req.body; 
 
-      result = await new PubControllers().updatePublicationData(location,description, id_product)
+      result = await new PubControllers().updatePublicationData(location,description,title, id_product)
 
       if (result.rowCount > 0) {
          response.error = false;
@@ -145,4 +152,5 @@ router.post('/register_publication',authenticateToken, async (req, res) => {
 
    res.status(status).json(response);
 });
+
 module.exports = router;

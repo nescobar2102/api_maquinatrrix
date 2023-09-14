@@ -12,6 +12,7 @@ router.get('/list_category', async (req, res) => {
        if (result.rowCount > 0) {
           response.error = false;
           response.msg = 'categorias encontradas';
+          response.count = result.rowCount;
           response.data = result.rows;
           status = 200;
        } else {
@@ -32,6 +33,7 @@ router.get('/list_tipo_pub', async (req, res) => {
       if (result.rowCount > 0) {
          response.error = false;
          response.msg = 'Tipo publicacion encontradas';
+         response.count = result.rowCount;
          response.data = result.rows;
          status = 200;
       } else {

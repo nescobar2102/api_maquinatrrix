@@ -19,36 +19,51 @@ class PubControllers {
          [id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery]).catch(console.log); 
         return results ;
     }
-    
+     
+    async getPublicationsDetails(id) {   
+        let results = await db.query(`   
+        SELECT  * from maqdb.product_details pd  where id_product = ${id} `).catch(console.log); 
+        return results ;
+    }
+
     async getPublicationsPanel() {       
         let results = await db.query(`       
-    SELECT p.id_product ,p.title ,  p.create_at ,pt.type_pub, c.category
-     FROM maqdb.products p   
-    INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
-    INNER JOIN maqdb.category c ON p.id_category = c.id_category   where p.status_id <> 8
-    order by p.id_product `).catch(console.log); 
-        return results ;
-    }
-    async getPublicationsPanelDetails(id) {       
-        let results = await db.query(`     
-   
-        SELECT p.id_product ,p.title ,  p.create_at ,pt.type_pub, c.category,pd.*
-        FROM maqdb.products p
-            LEFT JOIN maqdb.product_details pd  ON pd.id_product = p .id_product 
+        SELECT p.id_product ,p.title ,  TO_CHAR(p.create_at, 'DD Mon YYYY, HH:MI am') AS create_at_formatted,pt.type_pub, c.category
+        FROM maqdb.products p   
         INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
-        INNER JOIN maqdb.category c ON p.id_category = c.id_category   where p.status_id <> 8  
-        and p.id_product = ${id}
-        order by p.id_product  `).catch(console.log); 
+        INNER JOIN maqdb.category c ON p.id_category = c.id_category   where p.status_id <> 8
+        order by p.id_product `).catch(console.log); 
         return results ;
     }
     
-    async updatePublicationData(location,description, id_product) {
+    async getPublicationsPanelDetails(id) {       
+        let results = await db.query(`     
+        SELECT
+        p.id_product,
+        p.title,p.description, p.location,
+        TO_CHAR(p.create_at, 'DD Mon YYYY, HH:MI am') AS create_at_formatted,
+        pt.type_pub,
+        c.category,
+        pd.*
+    FROM
+        maqdb.products p
+        LEFT JOIN maqdb.product_details pd ON pd.id_product = p.id_product
+        INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
+        INNER JOIN maqdb.category c ON p.id_category = c.id_category
+    WHERE
+        p.status_id <> 8
+        AND p.id_product = ${id}
+    ORDER BY
+        p.id_product;  `).catch(console.log); 
+        return results ;
+    }
+    
+    async updatePublicationData(location,description, title,id_product) {
         let response
         try {
-            const query = ' UPDATE maqdb.products  SET location = $1,description= $2 WHERE id_product = $3  RETURNING *';
-            const values = [location,description,id_product];
-            const result = await db.query(query, values);
-           
+            const query = ' UPDATE maqdb.products  SET location = $1,description= $2 ,title =$3 WHERE id_product = $4  RETURNING *';
+            const values = [location,description,title,id_product];
+            const result = await db.query(query, values);           
             response = result
        
      } catch (err) { 
@@ -62,8 +77,7 @@ class PubControllers {
         try {
             const query = ' UPDATE maqdb.products  SET status_id = $1 WHERE id_product = $2  RETURNING *';
             const values = [status,id_product];
-            const result = await db.query(query, values);
-           
+            const result = await db.query(query, values);           
             response = result
        
      } catch (err) { 
@@ -72,6 +86,23 @@ class PubControllers {
        return response
     }
     
+    async updatePublicationDetail(id_product, price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery) {
+        let response
+        try {
+            const query = `  UPDATE maqdb.product_details
+			SET  price= $1, brand= $2, model= $3, "year"= $4, "condition"= $5, mileage= $6, 
+            engine_number= $7, warranty= $8, "owner"= $9, delivery= $10, pay_now_delivery= $11
+			WHERE id_product =  $12
+             RETURNING *`;
+            const values = [ price, brand, model, year, condition, mileage, engine_number, warranty, owner, delivery, pay_now_delivery,id_product];
+            const result = await db.query(query, values);           
+            response = result
+       
+     } catch (err) { 
+        response = err;
+       }  
+       return response
+    }    
             
 }
 
