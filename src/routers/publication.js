@@ -6,9 +6,13 @@ const { newResponseJson } = require('../responseUtils');
 
 router.get('/list_publications_panel', async (req, res) => {
     const response = newResponseJson();
-    let status = 500;
- 
-    result = await new PubControllers().getPublicationsPanel() 
+    let status = 400;
+    const search = req.query.search ?? '';
+    const tpublicacion = req.query?.tpublicacion?? '';
+    const category = req.query?.category?? '';
+    const fcreacion = req.query?.fcreacion?? '';
+  
+    result = await new PubControllers().getPublicationsPanel(search,tpublicacion,category,fcreacion) 
  
        if (result.rowCount > 0) {
           response.error = false;
@@ -26,7 +30,7 @@ router.get('/list_publications_panel', async (req, res) => {
   
 router.get('/list_publications_panel_details', async (req, res) => {
    const response = newResponseJson();
-   let status = 500;
+   let status = 400;
    const id = req.query.id;
    result = await new PubControllers().getPublicationsPanelDetails(id) 
 
@@ -151,6 +155,30 @@ router.post('/register_publication',authenticateToken, async (req, res) => {
    
 
    res.status(status).json(response);
-});
+}); 
+
+
+router.get('/list_publications', async (req, res) => {
+    const response = newResponseJson();
+    let status = 400;
+    const search = req.query.search ?? '';
+    const tpublicacion = req.query?.tpublicacion?? '';
+    const category = req.query?.category?? ''; 
+    const limit = req.query?.limit?? ''; 
+    result = await new PubControllers().getPublicationsPortal(search,tpublicacion,category,limit) 
+ 
+       if (result.rowCount > 0) {
+          response.error = false;
+          response.msg = 'Publicaciones encontradas';
+          response.count = result.rowCount;
+          response.data = result.rows;
+          status = 200;
+       } else {
+          response.msg = 'No se encontraron publicaciones';
+       }
+    
+ 
+    res.status(status).json(response);
+ });
 
 module.exports = router;

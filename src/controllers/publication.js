@@ -26,16 +26,68 @@ class PubControllers {
         return results ;
     }
 
-    async getPublicationsPanel() {       
-        let results = await db.query(`       
-        SELECT p.id_product ,p.title ,  TO_CHAR(p.create_at, 'DD Mon YYYY, HH:MI am') AS create_at_formatted,pt.type_pub, c.category
-        FROM maqdb.products p   
-        INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
-        INNER JOIN maqdb.category c ON p.id_category = c.id_category   where p.status_id <> 8
-        order by p.id_product `).catch(console.log); 
+    async getPublicationsPanel(search,tpublicacion,category,fcreacion)  {   
+        let sql = `       
+            SELECT p.id_product ,p.title ,  TO_CHAR(p.create_at, 'DD Mon YYYY, HH:MI am') AS create_at_formatted,
+            pt.type_pub, c.category
+            FROM maqdb.products p   
+            INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
+            INNER JOIN maqdb.category c ON p.id_category = c.id_category  
+            WHERE p.status_id <> 8` ;
+                
+            if (search !== '') {
+                sql += ` AND p.title ILIKE '%${search}%'`;
+            }        
+            if (tpublicacion !== '') {
+              sql += ` AND pt.id_publication_type = '${tpublicacion}'`;
+            }
+            if (category !== '') {
+              sql += ` AND c.id_category = '${category}'`;
+            }
+            if (fcreacion !== '') {
+             sql += ` AND p.create_at = '${fcreacion}'`;
+            }
+            
+         sql += ` ORDER BY  p.id_product;`;
+             
+        let results = await db.query(sql).catch(console.log); 
         return results ;
     }
     
+    async getPublicationsPortal(search,tpublicacion,category,limit) {   
+        let sql = `       
+        SELECT
+        p.id_product,
+        p.title,p.description, p.location,
+        TO_CHAR(p.create_at, 'DD Mon YYYY, HH:MI am') AS create_at_formatted,
+        pt.type_pub,
+        c.category,
+        pd.*
+    FROM
+        maqdb.products p
+        LEFT JOIN maqdb.product_details pd ON pd.id_product = p.id_product
+        INNER JOIN maqdb.publication_type pt ON p.id_publication_type = pt.id_publication_type
+        INNER JOIN maqdb.category c ON p.id_category = c.id_category
+    WHERE
+        p.status_id <> 8 ` ;
+                
+            if (search !== '') {
+                sql += ` AND p.title ILIKE '%${search}%'`;
+            }        
+            if (tpublicacion !== '') {
+              sql += ` AND pt.id_publication_type = '${tpublicacion}'`;
+            }
+            if (category !== '') {
+              sql += ` AND c.id_category = '${category}'`;
+            }
+           
+            
+         sql += ` ORDER BY  p.id_product   LIMIT ${limit};`;
+            
+        
+        let results = await db.query(sql).catch(console.log); 
+        return results ;
+    }
     async getPublicationsPanelDetails(id) {       
         let results = await db.query(`     
         SELECT
