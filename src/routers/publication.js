@@ -200,6 +200,7 @@ router.get('/list_publications', async (req, res) => {
           status = 200;
        } else {
           response.msg = 'No se encontraron publicaciones';
+           status = 200;
        }
     
  
