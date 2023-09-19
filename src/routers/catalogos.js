@@ -28,8 +28,7 @@ router.get('/list_tipo_pub', async (req, res) => {
    const response = newResponseJson();
    let status = 500;
 
-   result = await new CatalogoControllers().getTipoPublicacion() 
-
+   result = await new CatalogoControllers().getTipoPublicacion();
       if (result.rowCount > 0) {
          response.error = false;
          response.msg = 'Tipo publicacion encontradas';

@@ -17,7 +17,8 @@ app.use(fileUpload());
 const routes = [
    require('./src/routers/users'), 
    require('./src/routers/publication'),
-   require('./src/routers/catalogos')
+   require('./src/routers/catalogos'),
+   require('./src/routers/upload')
 ];
 
 for (const route of routes) {
