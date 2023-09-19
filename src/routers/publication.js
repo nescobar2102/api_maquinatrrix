@@ -62,6 +62,7 @@ router.get('/list_publications_imagen', async (req, res) => {
          response.data = result.rows;
          status = 200;
       } else {
+         status = 200;
          response.msg = 'No se encontraron publicaciones';
       }
    
