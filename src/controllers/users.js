@@ -1,4 +1,4 @@
-const db = require('../config/conexionDB.js')
+/* const db = require('../config/conexionDB.js') */
 
 class UserControllers {
    
