@@ -4,14 +4,23 @@ require('dotenv').config();
 class EmailSender {
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
+      service:'gmail',
+      auth : {
+        type:'OAuth2',
+        user :process.env.EMAIL_ADDRESS,
+        pass :process.env.EMAIL_PASSWORD,
+        clientId :"257422679122-3c6egr7hrl34p7hik6emckf99rqgbn8f.apps.googleusercontent.com",
+        clientSecret : "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",
+        refreshToken : "1//04y-mxCi1LU5XCgYIARAAGAQSNwF-L9IrF7-X1et2pjQIzyL9AdWsLk7ZxvJ7C1RmyMp2AiWChzcUKueFrJf-YmaP0HB8eCgNtRM"
+      }
+    /*   host: process.env.EMAIL_HOST,
       port: 587,
       secure: false,  
       requireTLS: true,
       auth: {
         user: process.env.EMAIL_ADDRESS,
         pass: process.env.EMAIL_PASSWORD
-      }
+      } */
     });
   }
 
