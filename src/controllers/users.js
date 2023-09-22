@@ -17,7 +17,7 @@ class UserControllers {
         try {
             const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
             const results = await Users.findAll({
-                attributes: ['id_user', 'email', 'Profile.full_name', 'Profile.photo'],
+                attributes: ['id_user', 'email', 'Profile.full_name', 'Profile.photo','UserRoles.id_role'],
                 include: [
                     {
                         model: Status,

@@ -37,9 +37,10 @@ router.post('/login_account', async (req, res) => {
             response.msg = `Credenciales inválidas`;
         } else {
             const userData = exist[0];  
-            const { id_user, email, Profile } = userData;
-
-            let full_name, photo;
+            const { id_user, email, Profile ,UserRoles} = userData;
+            console.log("UserRoles*-*-*-qweqwe", UserRoles[0].Role)
+      
+            let full_name, photo,roles;
             if (Profile) {
                 full_name = Profile.full_name;
                 photo = Profile.photo;
@@ -47,10 +48,15 @@ router.post('/login_account', async (req, res) => {
                 full_name = null;
                 photo = null;
             }
+            if(UserRoles){
+                roles = UserRoles[0].Role.roles            
+            }else{
+                roles = null;
+            }
             const token = jwt.sign({ id_user: id_user, email: email, full_name: full_name }, process.env.JWT_SECRET, { expiresIn: '1h' });
             response.error = false;
             response.msg = `Inicio de sesión exitoso`;
-            response.data = { id_user, email, full_name, photo, token }
+            response.data = { id_user, email, full_name, photo,roles, token }
             status = 200
         }
     }
