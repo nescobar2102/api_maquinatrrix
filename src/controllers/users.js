@@ -1,4 +1,4 @@
-const { literal } = require('sequelize');
+const {literal} = require('sequelize');
 const crypto = require('crypto');
 const Users = require('../models/User');
 const Status = require('../models/Status');
@@ -6,10 +6,10 @@ const UserRoles = require('../models/UserRoles');
 const Roles = require('../models/Roles');
 const Profile = require('../models/Profile');
 
-UserRoles.belongsTo(Users, { foreignKey: 'id_user' });
-Users.hasMany(UserRoles, { foreignKey: 'id_user' });
-Profile.belongsTo(Users, { foreignKey: 'id_user' });
-Users.hasOne(Profile, { foreignKey: 'id_user' });
+UserRoles.belongsTo(Users, {foreignKey: 'id_user'});
+Users.hasMany(UserRoles, {foreignKey: 'id_user'});
+Profile.belongsTo(Users, {foreignKey: 'id_user'});
+Users.hasOne(Profile, {foreignKey: 'id_user'});
 class UserControllers {
 
     async validateCredencials(email, password) {
@@ -17,14 +17,21 @@ class UserControllers {
         try {
             const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
             const results = await Users.findAll({
-                attributes: ['id_user', 'email', 'Profile.full_name', 'Profile.photo','UserRoles.id_role'],
+                attributes: [
+                    'id_user',
+                    'email',
+                    'Profile.full_name',
+                    'Profile.photo',
+                    'UserRoles.id_role'
+                ],
                 include: [
                     {
                         model: Status,
                         required: true,
-                        where: { id_status: '3' }
-                    },
-                    {
+                        where: {
+                            id_status: '3'
+                        }
+                    }, {
                         model: UserRoles,
                         required: true,
                         include: [
@@ -33,8 +40,7 @@ class UserControllers {
                                 required: true
                             }
                         ]
-                    },
-                    {
+                    }, {
                         model: Profile,
                         required: false
                     }
@@ -56,7 +62,9 @@ class UserControllers {
         let response
         try {
             const user = await Users.findOne({
-                where: { email: email }
+                where: {
+                    email: email
+                }
             });
             response = user
         } catch (err) {
@@ -70,10 +78,13 @@ class UserControllers {
         try {
             const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
 
-            const result = await Users.update(
-                { password: hashedPassword },
-                { where: { email: email } }
-            );
+            const result = await Users.update({
+                password: hashedPassword
+            }, {
+                where: {
+                    email: email
+                }
+            });
             response = result
 
         } catch (err) {
@@ -85,4 +96,3 @@ class UserControllers {
 }
 
 module.exports = UserControllers;
-

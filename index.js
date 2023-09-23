@@ -40,7 +40,7 @@ for (const route of routes)  {
 }
 sequelize.sync().then(() => {
   console.log('Tablas sincronizadas');
-  // insertData();
+    insertData();
   app.listen(PORT, () => {
     console.log(`App running on port ${PORT}.`);
   });
