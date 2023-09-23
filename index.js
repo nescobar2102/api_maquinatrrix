@@ -35,12 +35,12 @@ const routes = [
   require('./src/routers/upload')
 ];
 
-for (const route of routes) {
+for (const route of routes)  {
   app.use(route);
 }
 sequelize.sync().then(() => {
   console.log('Tablas sincronizadas');
-  //insertData();
+  // insertData();
   app.listen(PORT, () => {
     console.log(`App running on port ${PORT}.`);
   });

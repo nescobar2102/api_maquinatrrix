@@ -5,7 +5,7 @@ class EmailSender {
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: 587,
+      port: 587,  
       secure: false,  
       requireTLS: true,
       auth: {
