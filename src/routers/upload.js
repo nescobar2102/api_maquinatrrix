@@ -4,11 +4,7 @@ const PubControllers = require('../controllers/publication');
 const {newResponseJson} = require('../responseUtils');
 const path = require('path');
 const fs = require('fs');
-
-router.get('/', function (req, res) {
-    res.render('uploadForm.ejs')
-})
-
+ 
 const _dirname = './public/uploads';
 
 router.post('/upload_image', async (req, res) => {
